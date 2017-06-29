@@ -160,47 +160,6 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> selectUsers(String name) {
-		connection = ConnectionUtil.getConnection();
-		
-		StringBuilder sb = new StringBuilder("select id, name, login_id, password, token from tb_user ");
-		if (name != null) {
-			sb.append(" where name like ?");
-		}
-		String sql = sb.toString();
-		
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			pstmt = connection.prepareStatement(sql);
-			if (name != null) {
-				pstmt.setString(1, name);
-			}
-			
-			rs = pstmt.executeQuery();
-			
-			List<User> users = new ArrayList<>();
-			while(rs.next()) {
-				User user= new User();
-				user.setId(rs.getLong("id"));
-				user.setLoginId(rs.getString("login_id"));
-				user.setName(rs.getString("name"));
-				user.setPassword(rs.getString("password"));
-				user.setToken(rs.getString("token"));
-				
-				users.add(user);
-			}
-			return users;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		} finally {
-			if (rs != null) try { rs.close(); } catch (Exception e) {}
-			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
-		}
-	}
-
 	public User selectUserByLoginId(String loginId) {
 		connection = ConnectionUtil.getConnection();
 		
@@ -257,6 +216,46 @@ public class UserDao {
 			user.setToken(rs.getString("token"));
 			
 			return user;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} finally {
+			if (rs != null) try { rs.close(); } catch (Exception e) {}
+			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
+			if (connection != null) try { connection.close(); } catch (Exception e) {}
+		}
+	}
+	
+
+	public List<User> selectUsers(String name) {
+		connection = ConnectionUtil.getConnection();
+		
+		StringBuilder sb = new StringBuilder("select id, name, login_id from tb_user ");
+		if (name != null) {
+			sb.append(" where name like ?");
+		}
+		String sql = sb.toString();
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			pstmt = connection.prepareStatement(sql);
+			if (name != null) {
+				pstmt.setString(1, "%" + name + "%");
+			}
+			
+			rs = pstmt.executeQuery();
+			
+			List<User> users = new ArrayList<>();
+			while(rs.next()) {
+				User user= new User();
+				user.setId(rs.getLong("id"));
+				user.setLoginId(rs.getString("login_id"));
+				user.setName(rs.getString("name"));
+				
+				users.add(user);
+			}
+			return users;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

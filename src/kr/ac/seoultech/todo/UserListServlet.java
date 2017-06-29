@@ -16,7 +16,10 @@ import kr.ac.seoultech.todo.util.ConnectionUtil;
 import kr.ac.seoultech.todo.util.RequestUtil;
 import kr.ac.seoultech.todo.util.ResponseUtil;
 
-
+/**
+ * 
+ * 인증이 필요 없는 서비스 (테스트용)
+ */
 @WebServlet("/user")
 public class UserListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +41,7 @@ public class UserListServlet extends HttpServlet {
 		
 		try {
 			List<User> users = userDao.selectUsers(name);
-			ResponseUtil.write(response, HttpServletResponse.SC_OK, users);
+			ResponseUtil.write(response, HttpServletResponse.SC_OK, users, false);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
