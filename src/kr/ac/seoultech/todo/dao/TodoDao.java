@@ -15,8 +15,14 @@ import kr.ac.seoultech.todo.util.ConnectionUtil;
 
 public class TodoDao {
 	
+	private Connection connection;
+	
+	public TodoDao(Connection connection) {
+		this.connection = connection;
+	}
+	
 	public Long createTodo(Todo todo) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "insert into tb_todo(title, content, create_at, user_id) values (?, ?, ?, ?)";
 		PreparedStatement pstmt = null;
@@ -45,12 +51,11 @@ public class TodoDao {
 			throw new RuntimeException(e);
 		} finally {
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
 	
 	public void updateTodo(Todo todo) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "update tb_todo set title = ?, content = ? where id = ? and user_id = ?";
 		PreparedStatement pstmt = null;
@@ -67,12 +72,11 @@ public class TodoDao {
 			throw new RuntimeException(e);
 		} finally {
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
 	
 	public void deleteTodo(Long todoId, Long userId) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "delete from tb_todo where id = ? and user_id = ?";
 		PreparedStatement pstmt = null;
@@ -87,20 +91,20 @@ public class TodoDao {
 			throw new RuntimeException(e);
 		} finally {
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
 	
-	public Todo selectTodo(Long id) {
-		Connection connection = ConnectionUtil.getConnection();
+	public Todo selectTodo(Long id, Long userId) {
+		connection = ConnectionUtil.getConnection();
 		
-		String sql = "select id, title, content, create_at, user_id from tb_todo where id = ?";
+		String sql = "select id, title, content, create_at, user_id from tb_todo where id = ? and user_id = ?";
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			pstmt = connection.prepareStatement(sql);
 			pstmt.setLong(1, id);
+			pstmt.setLong(2, userId);
 			
 			rs = pstmt.executeQuery();
 			
@@ -114,12 +118,11 @@ public class TodoDao {
 		} finally {
 			if (rs != null) try { rs.close(); } catch (Exception e) {}
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
 	
 	public List<Todo> selectTodoByMaxId(TodoSearchCond searchCond) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		StringBuilder sb = new StringBuilder("select id, title, content, create_at, user_id from tb_todo ");
 		sb.append("where user_id = ? ");
@@ -154,7 +157,6 @@ public class TodoDao {
 		} finally {
 			if (rs != null) try { rs.close(); } catch (Exception e) {}
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
 	
@@ -167,7 +169,7 @@ public class TodoDao {
 	public List<Todo> selectTodoBySinceId(TodoSearchCond searchCond) {
 		if (searchCond.getSinceId() == null) throw new RuntimeException("필수 검색조건이 없습니다.");
 		
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 	
 		StringBuilder sb = new StringBuilder("select * from (select id, title, content, create_at, user_id from tb_todo ");
 		sb.append("where user_id = ? ");
@@ -196,7 +198,6 @@ public class TodoDao {
 		} finally {
 			if (rs != null) try { rs.close(); } catch (Exception e) {}
 			if (pstmt != null) try { pstmt.close(); } catch (Exception e) {}
-			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 		
 	}

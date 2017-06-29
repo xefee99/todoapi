@@ -14,7 +14,11 @@ public class ConnectionUtil {
 		}
 	}
 	
-	private final static String URL = "jdbc:mysql://localhost:3306/seoultech?characterEncoding=utf8";
+	/**
+	 * mysql 최신 버전에서 SSL 추천해서 경고메시지가 출력
+	 * ssl 사용안한 설정을 위해 verifyServerCertificate=false 과 useSSL=false 옵션 추가 
+	 */
+	private final static String URL = "jdbc:mysql://localhost:3306/seoultech?characterEncoding=utf8&verifyServerCertificate=false&useSSL=false";
 	private final static String USERNAME = "seoultech";
 	private final static String PASSWORD = "seoultech";
 	
@@ -29,4 +33,8 @@ public class ConnectionUtil {
 		}
 	}
 
+	public static void close(Connection connection) {
+		if (connection != null) try { connection.close(); } catch (Exception e) {}
+	}
+	
 }

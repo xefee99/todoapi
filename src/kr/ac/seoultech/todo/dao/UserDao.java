@@ -13,8 +13,13 @@ import kr.ac.seoultech.todo.util.ConnectionUtil;
 
 public class UserDao {
 
+	private Connection connection;
+	public UserDao(Connection connection) {
+		this.connection = connection;
+	}
+	
 	public Long createUser(User user) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "insert into tb_user(name, login_id, password, token) values (?, ?, ?, ?)";
 		PreparedStatement pstmt = null;
@@ -44,7 +49,7 @@ public class UserDao {
 	}
 
 	public void updateUser(User user) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "update tb_user set name = ? where id = ?";
 		PreparedStatement pstmt = null;
@@ -64,7 +69,7 @@ public class UserDao {
 	}
 
 	public void updateUserPassword(Long id, String password) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "update tb_user set password = ? where id = ?";
 		PreparedStatement pstmt = null;
@@ -84,7 +89,7 @@ public class UserDao {
 	}
 	
 	public void updateUserToken(Long id, String token) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "update tb_user set token = ? where id = ?";
 		PreparedStatement pstmt = null;
@@ -104,7 +109,7 @@ public class UserDao {
 	}
 	
 	public void deleteUser(Long id) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "delete from tb_user where id = ?";
 		PreparedStatement pstmt = null;
@@ -123,7 +128,7 @@ public class UserDao {
 	}
 	
 	public User selectUser(Long id) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "select id, name, login_id, password, token from tb_user where id = ?";
 		
@@ -156,7 +161,7 @@ public class UserDao {
 	}
 	
 	public List<User> selectUsers(String name) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		StringBuilder sb = new StringBuilder("select id, name, login_id, password, token from tb_user ");
 		if (name != null) {
@@ -197,7 +202,7 @@ public class UserDao {
 	}
 
 	public User selectUserByLoginId(String loginId) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "select id, name, login_id, password, token from tb_user where login_id = ?";
 		
@@ -230,7 +235,7 @@ public class UserDao {
 	}
 	
 	public User selectUserByToken(String token) {
-		Connection connection = ConnectionUtil.getConnection();
+		connection = ConnectionUtil.getConnection();
 		
 		String sql = "select id, name, login_id, password, token from tb_user where token = ?";
 		
@@ -261,6 +266,5 @@ public class UserDao {
 			if (connection != null) try { connection.close(); } catch (Exception e) {}
 		}
 	}
-
 	
 }

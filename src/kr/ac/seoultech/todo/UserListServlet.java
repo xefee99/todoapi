@@ -1,6 +1,7 @@
 package kr.ac.seoultech.todo;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.ac.seoultech.todo.dao.UserDao;
 import kr.ac.seoultech.todo.model.User;
+import kr.ac.seoultech.todo.util.ConnectionUtil;
 import kr.ac.seoultech.todo.util.RequestUtil;
 import kr.ac.seoultech.todo.util.ResponseUtil;
 
@@ -20,10 +22,12 @@ public class UserListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	private UserDao userDao;
-
+	private Connection connection;
+	
     public UserListServlet() {
         super();
-        userDao = new UserDao();
+        connection = ConnectionUtil.getConnection();
+        userDao = new UserDao(connection);
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,9 +36,18 @@ public class UserListServlet extends HttpServlet {
 		String name = request.getParameter("name");
 		System.out.println("name : " + name);
 		
-		List<User> users = userDao.selectUsers(name);
+		try {
+			List<User> users = userDao.selectUsers(name);
+			ResponseUtil.write(response, HttpServletResponse.SC_OK, users);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			ResponseUtil.write(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
+			
+		} finally {
+			ConnectionUtil.close(connection);
+		} 
 		
-		ResponseUtil.write(response, HttpServletResponse.SC_OK, users);
 	}
 
 }

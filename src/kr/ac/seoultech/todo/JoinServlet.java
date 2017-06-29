@@ -1,6 +1,7 @@
 package kr.ac.seoultech.todo;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.ac.seoultech.todo.dao.UserDao;
 import kr.ac.seoultech.todo.model.User;
+import kr.ac.seoultech.todo.util.ConnectionUtil;
 import kr.ac.seoultech.todo.util.RequestUtil;
 import kr.ac.seoultech.todo.util.ResponseUtil;
 
@@ -20,11 +22,13 @@ import kr.ac.seoultech.todo.util.ResponseUtil;
 public class JoinServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
+	private Connection connection;
 	private UserDao userDao;
 	
     public JoinServlet() {
         super();
-        userDao = new UserDao();
+        connection = ConnectionUtil.getConnection();
+        userDao = new UserDao(connection);
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,13 +47,22 @@ public class JoinServlet extends HttpServlet {
 		String token = randomUUID.toString();
 		user.setToken(token);
 		
-		Long createdUserId = userDao.createUser(user);
 		
-		Map<String, Object> result = new HashMap<>();
-		result.put("token", token);
-		result.put("id", createdUserId);
-		
-		ResponseUtil.write(response, HttpServletResponse.SC_OK, result);
+		try {
+			Long createdUserId = userDao.createUser(user);
+			
+			Map<String, Object> result = new HashMap<>();
+			result.put("token", token);
+			result.put("id", createdUserId);
+			
+			ResponseUtil.write(response, HttpServletResponse.SC_OK, result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ResponseUtil.write(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
+			
+		} finally {
+			ConnectionUtil.close(connection);
+		}
 		
 	}
 

@@ -1,6 +1,7 @@
 package kr.ac.seoultech.todo;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -11,9 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.ac.seoultech.todo.dao.TodoDao;
 import kr.ac.seoultech.todo.model.Todo;
+import kr.ac.seoultech.todo.util.ConnectionUtil;
 import kr.ac.seoultech.todo.util.RequestUtil;
 import kr.ac.seoultech.todo.util.ResponseUtil;
-import kr.ac.seoultech.todo.util.TodoApiConsts;
+import kr.ac.seoultech.todo.util.SessionUtil;
 
 
 @WebServlet("/todo/insert")
@@ -22,10 +24,11 @@ public class TodoInsertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private TodoDao todoDao;
-	
+	private Connection connection;
 	public TodoInsertServlet() {
 		super();
-		todoDao = new TodoDao();
+		connection = ConnectionUtil.getConnection();
+		todoDao = new TodoDao(connection);
 	}
 
 	/**
@@ -35,7 +38,7 @@ public class TodoInsertServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestUtil.setCharacterEncoding(request);
 		
-		Long loginUserId = (Long) request.getAttribute(TodoApiConsts.KEY_LOGIN_USER_ID);
+		Long loginUserId = SessionUtil.getLoginUserId(request);
 		
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");

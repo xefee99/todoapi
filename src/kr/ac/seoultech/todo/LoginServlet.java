@@ -1,6 +1,7 @@
 package kr.ac.seoultech.todo;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.ac.seoultech.todo.dao.UserDao;
 import kr.ac.seoultech.todo.model.User;
+import kr.ac.seoultech.todo.util.ConnectionUtil;
 import kr.ac.seoultech.todo.util.RequestUtil;
 import kr.ac.seoultech.todo.util.ResponseUtil;
 
@@ -20,12 +22,14 @@ import kr.ac.seoultech.todo.util.ResponseUtil;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+    
+	private Connection connection;
 	private UserDao userDao; 
 	
     public LoginServlet() {
         super();
-        userDao = new UserDao();
+        connection = ConnectionUtil.getConnection();
+        userDao = new UserDao(connection);
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
